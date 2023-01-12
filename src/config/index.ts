@@ -1,18 +1,18 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 
-import merge from "lodash.merge";
+import merge from 'lodash.merge';
 
 if (!process.env.DB_URL) {
-  throw new Error("Enviroment variables are not defined.");
+  throw new Error('Enviroment variables are not defined.');
 }
 
-process.env.PORT = process.env.PORT ?? "3000";
+process.env.PORT = process.env.PORT ?? '3000';
 
 type Config = {
   port: string;
   logging: boolean;
-  env: String;
+  env: string;
   secret: {
     dbUrl: string;
   };
@@ -21,7 +21,7 @@ type Config = {
 const defaultConfig: Config = {
   port: process.env.PORT,
   logging: true,
-  env: "development",
+  env: 'development',
   secret: {
     dbUrl: process.env.DB_URL,
   },
@@ -30,14 +30,14 @@ const defaultConfig: Config = {
 let envConfig: Config;
 
 switch (process.env.ENV) {
-  case "production":
-    envConfig = require("./production");
+  case 'production':
+    envConfig = require('./production');
     break;
-  case "stagging":
-    envConfig = require("./staging");
+  case 'stagging':
+    envConfig = require('./staging');
     break;
   default:
-    envConfig = require("./local");
+    envConfig = require('./local');
 }
 
 export default merge(defaultConfig, envConfig);
