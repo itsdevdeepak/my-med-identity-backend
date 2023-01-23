@@ -3,7 +3,7 @@ dotenv.config();
 
 import merge from 'lodash.merge';
 
-if (!process.env.DB_URL) {
+if (!process.env.DB_URL || !process.env.JWT_SECRET) {
   throw new Error('Enviroment variables are not defined.');
 }
 
@@ -13,17 +13,25 @@ type Config = {
   port: string;
   logging: boolean;
   env: string;
+  rpID: string;
+  applicationName: string;
+  origin: string;
   secret: {
     dbUrl: string;
+    jwt: string;
   };
 };
 
 const defaultConfig: Config = {
   port: process.env.PORT,
+  applicationName: 'My Med Identity',
+  rpID: 'localhost',
+  origin: `http://localhost:5500`,
   logging: true,
   env: 'development',
   secret: {
     dbUrl: process.env.DB_URL,
+    jwt: process.env.JWT_SECRET,
   },
 };
 
