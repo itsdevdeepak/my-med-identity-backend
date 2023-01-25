@@ -1,19 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import CustomError from '../errors/CustomError';
+import ServerError from '../errors/ServerError';
 import ValidationError from '../errors/ValidationError';
 
 export const errorHandler = (
-  err: CustomError,
+  err: Error,
   _req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   if (err instanceof ValidationError) {
-    res.status(err.statusCode).send({ errors: err.serializeError() });
+    res.status(err.statusCode).json({ errors: err.serializeError() });
     return;
   }
-
-  res.status(err.statusCode).send({ error: err.serializeError() });
+  if (err instanceof CustomError) {
+    res.status(err.statusCode).json({ error: err.serializeError() });
+  } else {
+    next(new ServerError());
+  }
 };
 
 export const validationErrorHandler = (

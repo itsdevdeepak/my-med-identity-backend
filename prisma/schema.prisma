@@ -61,22 +61,29 @@ enum BloodType {
   AB_NEGATIVE
 }
 
+enum Gender {
+  Male
+  Female
+  Other
+}
+
 model User {
-  id           String     @id @default(uuid())
-  createdAt    DateTime   @default(now())
-  email        String     @unique
-  name         String
-  mobileNumber Int?       @unique
-  ssn          String     @unique
-  role         Role       @default(PATIENT)
-  dateOfBirth  DateTime?
-  gender       String?
-  bloodType    BloodType?
+  id              String           @id @default(uuid())
+  createdAt       DateTime         @default(now())
+  email           String           @unique
+  name            String
+  mobileNumber    Int?             @unique
+  ssn             String           @unique
+  role            Role             @default(PATIENT)
+  dateOfBirth     DateTime?
+  gender          Gender?
+  bloodType       BloodType?
+  medicalHistorys MedicalHistory[]
+  labResults      LabResult[]
+  insurance       Insurance[]
 
   currentChallenge String?
   devices          Authenticator[]
-  @@index(fields: [ssn],   map: "userSSN")
-  @@index(fields: [email], map: "userEmail")
 }
 
 model MedicalStaff {
@@ -88,7 +95,7 @@ model MedicalStaff {
   ssn          String     @unique
   role         Role       @default(MEDICAL_STAFF)
   dateOfBirth  DateTime?
-  gender       String?
+  gender       Gender?
   bloodType    BloodType?
 
   currentChallenge String?
@@ -105,4 +112,46 @@ model HealthInsuranceCompany {
 
   currentChallenge String?
   devices          Authenticator[]
+}
+
+model MedicalHistory {
+  id        String   @id() @default(uuid())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  condition     String
+  illness       String
+  medication    String
+  allergies     String
+  Immunizations String
+
+  userID String
+  user   User   @relation(fields: [userID], references: [id])
+}
+
+model LabResult {
+  id        String   @id() @default(uuid())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  testName   String
+  testResult String
+  testDate   DateTime
+
+  userID String
+  user   User   @relation(fields: [userID], references: [id])
+}
+
+model Insurance {
+  id        String   @id() @default(uuid())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  insurance_provider String
+  policy_number      Int
+  policy_start_date  DateTime
+  policy_end_date    DateTime
+
+  userID String
+  user   User   @relation(fields: [userID], references: [id])
 }

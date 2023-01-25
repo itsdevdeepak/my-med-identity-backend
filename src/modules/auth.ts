@@ -71,7 +71,6 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
     req.user = payload as User;
     next();
   } catch (e) {
-    console.log('protect Error', e);
     next(new AuthorizationError());
   }
 };

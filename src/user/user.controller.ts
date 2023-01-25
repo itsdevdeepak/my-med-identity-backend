@@ -119,8 +119,9 @@ export const registerUser = async (
 
     const token = createToken(userRes);
     res.status(200).send({ data: token });
+  } else {
+    next(new AuthorizationError());
   }
-  next(new AuthorizationError());
 };
 
 export const generateAuthenticationOptions = async (
@@ -144,6 +145,7 @@ export const generateAuthenticationOptions = async (
 
   const authOptions = await getAuthenticationOptions(dbUser);
   res.status(200).send({ data: authOptions });
+  return;
 };
 
 export const signInUser = async (
@@ -193,6 +195,8 @@ export const signInUser = async (
     );
     const token = createToken(dbUser);
     res.status(200).send({ data: token });
+    return;
+  } else {
+    next(new AuthorizationError());
   }
-  next(new AuthorizationError());
 };

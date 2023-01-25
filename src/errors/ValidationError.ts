@@ -6,7 +6,7 @@ class ValidationError extends CustomError {
   private errors: Err[];
   constructor(errors: Err[]) {
     super('Validation Error');
-    this.statusCode = 406;
+    this.statusCode = 400;
     this.errors = errors;
   }
 

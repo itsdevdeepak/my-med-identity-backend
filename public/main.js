@@ -1,10 +1,14 @@
 const regBtn = document.getElementById('register');
 const sigBtn = document.getElementById('signIn');
+const showBtn = document.getElementById('show');
+const deleteBtn = document.getElementById('delete');
+const updateBtn = document.getElementById('update');
+const root = document.getElementById('root');
 
 const user = {
-  name: 'dsa',
-  email: 'ads@asddn.com',
-  ssn: 'sasdsada',
+  name: 'sadasdsadsdasd',
+  email: 'asfasf@sadasdasdas.com',
+  ssn: 'sadaasdasdsadsd',
 };
 
 const makeRegRequest = async () => {
@@ -96,4 +100,69 @@ sigBtn.addEventListener('click', async () => {
   console.log('step 4');
   const vRes = await makevAuthRequest(attResp, opttions.data.challenge);
   console.log(vRes);
+});
+
+var usersData = { data: 'NA' };
+
+showBtn.addEventListener('click', () => {
+  usersData = [
+    {
+      id: '',
+      condition: 'condition 11',
+      illness: 'illnuss',
+      medication: 'NA',
+      allergies: 'NA',
+      Immunizations: 'NA',
+      userID: '1',
+    },
+    {
+      id: '2',
+      condition: 'condition 22',
+      illness: 'illnuss',
+      medication: 'NA',
+      allergies: 'NA',
+      Immunizations: 'NA',
+      userID: '32',
+    },
+  ];
+  root.innerText = JSON.stringify(usersData);
+});
+
+updateBtn.addEventListener('click', () => {
+  usersData = [
+    {
+      id: '',
+      condition: 'condition 11',
+      illness: 'illnuss',
+      medication: 'NA',
+      allergies: 'NA',
+      Immunizations: 'NA',
+      userID: '1',
+    },
+    {
+      id: '2',
+      condition: 'condition 33',
+      illness: 'some value',
+      medication: 'NA',
+      allergies: 'NA',
+      Immunizations: 'NA',
+      userID: '32',
+    },
+  ];
+  root.innerText = JSON.stringify(usersData);
+});
+
+deleteBtn.addEventListener('click', () => {
+  usersData = [
+    {
+      id: '',
+      condition: 'condition 11',
+      illness: 'illnuss',
+      medication: 'NA',
+      allergies: 'NA',
+      Immunizations: 'NA',
+      userID: '1',
+    },
+  ];
+  root.innerText = JSON.stringify(usersData);
 });
