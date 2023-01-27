@@ -1,8 +1,9 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import userRouter from './user/user.router';
 import MedicalHistoryRouter from './medical_history/medicalHistory.routes';
+import LabResultRouter from './lab_result/labResult.routes';
 import NotFoundError from './errors/NotFoundError';
 import { errorHandler } from './modules/middlewares';
 
@@ -15,11 +16,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(userRouter);
 
-app.get('/', (_req, res, next) => {
+app.get('/', (_req, res) => {
   res.send('version 1.0.0');
 });
 
 app.use('/api', MedicalHistoryRouter);
+app.use('/api', LabResultRouter);
 
 app.all('*', () => {
   throw new NotFoundError();
