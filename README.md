@@ -1,9 +1,8 @@
-# My Med Identity (backend)
 <div align="center">
   <img src="https://raw.githubusercontent.com/itsdevdeepak/my-med-identity/main/.github/images/logo.png" />
 </div>
 
-# My Med Identity
+# My Med Identity (Backend)
 
 My Med Identity is a personilized Mobile app that lets you store and manage your personal medical Records.
 
