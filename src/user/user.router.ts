@@ -1,45 +1,85 @@
 import { Router } from 'express';
-import { body, oneOf } from 'express-validator';
+import { body, oneOf, validationResult } from 'express-validator';
 import { validationErrorHandler } from '../modules/middlewares';
 import {
+  getUserProfile,
+  postSignUp,
   registerUser,
-  generateRegOptions,
-  generateAuthenticationOptions,
   signInUser,
+  updateUserProfile,
 } from './user.controller';
+import {
+  bloodGroupValidation,
+  genderValidation,
+  ssnValidator,
+} from '../utils/validation';
+import { BloodGroup } from '@prisma/client';
 
-const router = Router();
+const authRouter = Router();
+const profileRouter = Router(); // Protected Router
 
-const createUserValidations = [
-  body('user.name').isString(),
-  body('user.email').isEmail().normalizeEmail(),
-  body('user.ssn').isString(),
+const signupValidations = [
+  body('name').isLength({ min: 3 }).trim().escape(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 8 }).trim(),
+  body('ssn').custom(ssnValidator),
 ];
 
-const verifyCreateUserValidation = [
-  ...createUserValidations,
-  body('challenge').isString(),
-  body('authOptions').isObject(),
+const signinValidations = [
+  oneOf([
+    body('ssn').custom(ssnValidator),
+    body('email').isEmail().normalizeEmail(),
+  ]),
+  body('password').isLength({ min: 8 }),
 ];
 
-// Registration With WebAuthn
-router.post('/signup/get-options', createUserValidations, generateRegOptions);
-router.post('/signup/verify-options', verifyCreateUserValidation, registerUser);
+const postSignupValidations = [
+  body('mobileNumber').isLength({ min: 10, max: 10 }).toInt(),
+  body('dateOfBirth').isISO8601().toDate(),
+  body('gender').custom(genderValidation),
+  body('bloodGroup').custom(bloodGroupValidation),
+  body('allergies').isArray(),
+  body('height').isString(),
+  body('weight').isString(),
+];
 
-// Signin With WebAuthn
-router.post(
-  '/signin/get-options',
-  oneOf([body('ssn').isString(), body('email').isEmail().normalizeEmail()]),
-  generateAuthenticationOptions,
-);
-router.post(
-  '/signin/verify-options',
-  oneOf([body('ssn').isString(), body('email').isEmail().normalizeEmail()]),
-  body('authOptions').isObject(),
-  body('challenge').isString(),
+const userUpdateValidations = [
+  body('name').optional().isLength({ min: 3 }).trim().escape(),
+  body('email').optional().isEmail().normalizeEmail(),
+  body('password').optional().isLength({ min: 8 }).trim(),
+  body('ssn').optional().custom(ssnValidator),
+  body('mobileNumber').optional().isLength({ min: 10, max: 10 }),
+  body('dateOfBirth').optional().isDate().toDate(),
+  body('gender').optional().custom(genderValidation),
+  body('bloodGroup').optional().isIn(Object.values(BloodGroup)),
+  body('allergies').optional().isArray(),
+];
+
+authRouter.post(
+  '/signin',
+  signinValidations,
+  validationErrorHandler,
   signInUser,
 );
+authRouter.post(
+  '/signup',
+  signupValidations,
+  validationErrorHandler,
+  registerUser,
+);
 
-router.use(validationErrorHandler);
+profileRouter.post(
+  '/user/postsignup',
+  postSignupValidations,
+  validationErrorHandler,
+  postSignUp,
+);
+profileRouter.get('/user', getUserProfile);
+profileRouter.put(
+  '/user',
+  userUpdateValidations,
+  validationErrorHandler,
+  updateUserProfile,
+);
 
-export default router;
+export { authRouter, profileRouter };

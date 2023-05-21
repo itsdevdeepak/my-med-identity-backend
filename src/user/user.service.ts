@@ -1,36 +1,39 @@
+import { User } from '@prisma/client';
 import prisma from '../db';
 import ServerError from '../errors/ServerError';
-import { AuthenticatorType } from './user.controller';
+import {
+  UserProfile,
+  UserRegistrationAttributes,
+  UserUpdateAttributes,
+} from './user.interface';
 
-export const createUser = async (
-  user: {
-    email: string;
-    ssn: string;
-    name: string;
-  },
-  authenticator: AuthenticatorType,
-) => {
+const userProfileFields = {
+  id: true,
+  name: true,
+  email: true,
+  ssn: true,
+  bloodGroup: true,
+  dateOfBirth: true,
+  gender: true,
+  height: true,
+  mobileNumber: true,
+  weight: true,
+  allergies: true,
+};
+
+export const createUser = async (user: UserRegistrationAttributes) => {
   try {
     const userRes = await prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        ssn: user.ssn,
-        devices: {
-          create: {
-            ...authenticator,
-          },
-        },
-      },
+      data: user,
+      select: userProfileFields,
     });
-
     return userRes;
   } catch (error) {
     throw new ServerError();
   }
 };
 
-export const findUserBySSN = async (ssn: string) => {
+export const findUserBySSN = async (ssn: User['ssn']) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -43,15 +46,42 @@ export const findUserBySSN = async (ssn: string) => {
   }
 };
 
-export const findUserByEmail = async (email: string) => {
+export const findUserByEmail = async (email: User['email']) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  return user;
+};
+
+export const updateUser = async (
+  id: User['id'],
+  draftUser: UserUpdateAttributes,
+) => {
   try {
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.update({
       where: {
-        email,
+        id,
       },
+      data: {
+        ...draftUser,
+      },
+      select: userProfileFields,
     });
     return user;
   } catch (error) {
     throw new ServerError();
   }
+};
+
+export const getProfile = async (
+  id: User['id'],
+): Promise<UserProfile | null> => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: userProfileFields,
+  });
 };

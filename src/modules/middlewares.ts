@@ -10,6 +10,8 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log(err);
+
   if (err instanceof ValidationError) {
     res.status(err.statusCode).json({ errors: err.serializeError() });
     return;
