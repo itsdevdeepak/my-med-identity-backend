@@ -10,39 +10,6 @@ datasource db {
   url      = env("DB_URL")
 }
 
-enum AuthenticatorTranspoter {
-  usb
-  ble
-  nfc
-  internal
-}
-
-enum CredentialDeviceType {
-  singleDevice
-  multiDevice
-}
-
-model Authenticator {
-  id                   String                    @id @default(uuid())
-  credentialID         String                    @unique
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType CredentialDeviceType
-  credentialBackedUp   Boolean
-  transports           AuthenticatorTranspoter[]
-
-  userID String?
-  user   User?   @relation(fields: [userID], references: [id])
-
-  medicalStaffID String?
-  medicalStaff   MedicalStaff? @relation(fields: [medicalStaffID], references: [id])
-
-  healthInsurancCompanyID String?
-  healthInsurancCompany   HealthInsuranceCompany? @relation(fields: [healthInsurancCompanyID], references: [id])
-
-  @@map("devices")
-}
-
 enum Role {
   PATIENT
   MEDICAL_STAFF
@@ -50,7 +17,7 @@ enum Role {
   ADMIN
 }
 
-enum BloodType {
+enum BloodGroup {
   A_POSITIVE
   A_NEGATIVE
   B_POSITIVE
@@ -72,18 +39,32 @@ model User {
   createdAt       DateTime         @default(now())
   email           String           @unique
   name            String
-  mobileNumber    Int?             @unique
   ssn             String           @unique
+  password        String
+  mobileNumber    Int?             @unique
   role            Role             @default(PATIENT)
   dateOfBirth     DateTime?
   gender          Gender?
-  bloodType       BloodType?
+  height          String?
+  weight          String?
+  bloodGroup      BloodGroup?
+  allergies       String[]
   medicalHistorys MedicalHistory[]
   labResults      LabResult[]
   insurance       Insurance[]
+  records         Record[]
+}
 
-  currentChallenge String?
-  devices          Authenticator[]
+model Record {
+  id          String   @id @default(uuid())
+  name        String
+  date        DateTime @db.Date
+  description String
+  fileUrl     String
+  allergies   String[]
+
+  userID String
+  user   User   @relation(fields: [userID], references: [id])
 }
 
 model MedicalStaff {
@@ -96,10 +77,7 @@ model MedicalStaff {
   role         Role       @default(MEDICAL_STAFF)
   dateOfBirth  DateTime?
   gender       Gender?
-  bloodType    BloodType?
-
-  currentChallenge String?
-  devices          Authenticator[]
+  bloodGroup   BloodGroup?
 }
 
 model HealthInsuranceCompany {
@@ -109,9 +87,6 @@ model HealthInsuranceCompany {
   name         String
   mobileNumber Int      @unique
   role         Role     @default(HEALTH_INSURANCE_COMPANY)
-
-  currentChallenge String?
-  devices          Authenticator[]
 }
 
 model MedicalHistory {

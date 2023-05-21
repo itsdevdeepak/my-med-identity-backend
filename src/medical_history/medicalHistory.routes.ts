@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { protect } from '../modules/auth';
+// import { protect } from '../modules/auth';
 import { validationErrorHandler } from '../modules/middlewares';
 import {
   createMedicalHistory,
@@ -27,7 +27,7 @@ const updateMedicalHistoryValidators = [
   body('Immunizations').isString().optional(),
 ];
 
-router.use(protect);
+// router.use('/', protect);
 router.get('/medical-history', getMedicalHistorys);
 router.get('/medical-history/:id', getMedicalHistory);
 router.post(

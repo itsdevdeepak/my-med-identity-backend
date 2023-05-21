@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, oneOf } from 'express-validator';
-import { protect } from '../modules/auth';
+// import { protect } from '../modules/auth';
 import { validationErrorHandler } from '../modules/middlewares';
 import {
   createLabResult,
@@ -18,7 +18,7 @@ const labRetultValidator = [
   body('testDate').isDate().toDate(),
 ];
 
-router.use(protect);
+// router.use('/', protect);
 router.get('/lab-result', getLabResults);
 router.get('/lab-result/:id', getLabResult);
 router.post(
